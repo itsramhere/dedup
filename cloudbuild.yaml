@@ -1,0 +1,27 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/$PROJECT_ID/dedup',
+        '.'
+      ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        'gcr.io/$PROJECT_ID/dedup'
+      ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      [
+        'run', 'deploy', 'dedup-service',
+        '--image', 'gcr.io/$PROJECT_ID/dedup',
+        '--region', 'us-central1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
